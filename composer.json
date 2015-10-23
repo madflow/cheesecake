@@ -19,5 +19,13 @@
             "Cheesecake": "src/"
         }
     },
-    "bin": ["bin/cheesecake"]
+    "autoload-dev": {
+        "psr-0": {
+            "Cheesecake\\Test": "tests/"
+        }
+    },
+    "bin": ["bin/cheesecake"],
+    "scripts": {
+        "test": "phpunit"
+    }
 }

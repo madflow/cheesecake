@@ -11,6 +11,7 @@ ini_set('error_reporting', E_ALL);
 $loader = require_once __DIR__ . '/../vendor/autoload.php';
 
 $template = isset($argv[1]) ? $argv[1] : null;
+$output = isset($argv[2]) ? $argv[2] : null;
 
-$cake = new Cheesecake\Generator($template, [], '/tmp/');
+$cake = new Cheesecake\Generator($template, [], $output);
 $cake->run();
