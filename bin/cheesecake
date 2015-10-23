@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+
+<?php
+
+if (PHP_SAPI !== 'cli') {
+    echo 'Warning: Cheesecake should be invoked via the CLI version of PHP, not the '.PHP_SAPI.' SAPI'.PHP_EOL;
+}
+
+ini_set('error_reporting', E_ALL);
+
+$loader = require_once __DIR__ . '/../vendor/autoload.php';
+
+$template = isset($argv[1]) ? $argv[1] : null;
+
+$cake = new Cheesecake\Generator($template, [], '/tmp/');
+$cake->run();
