@@ -6,7 +6,7 @@ use Illuminate\Filesystem\Filesystem;
 
 class CheesecakeException extends \Exception
 {
-};
+}
 class CheesecakeNotFoundExeption extends CheesecakeException
 {
 }
@@ -104,7 +104,7 @@ class Generator
             $info = pathinfo($filename);
             $baseName = $info['basename'];
 
-            if ($baseName === 'cheesecake.json' or $baseName === 'cookiecutter.json') {
+            if ($baseName === 'cheesecake.json') {
                 continue;
             }
 
