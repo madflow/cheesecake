@@ -39,7 +39,7 @@ class Generator
     public function run()
     {
         $cakeJson = realpath($this->template).DIRECTORY_SEPARATOR.'cheesecake.json';
-        if (!file_exists($cakeJson) AND !file_exists($cookieJson)) {
+        if (!file_exists($cakeJson)) {
             throw new CheesecakeNotFoundExeption('Hi there! There seems to be no cheesecake.json file, ey!');
         }
         $replace = [];
