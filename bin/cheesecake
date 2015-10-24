@@ -8,10 +8,27 @@ if (PHP_SAPI !== 'cli') {
 
 ini_set('error_reporting', E_ALL);
 
-$loader = require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
-$template = isset($argv[1]) ? $argv[1] : null;
-$output = isset($argv[2]) ? $argv[2] : null;
+$doc = <<<DOC
+Cheesecake
 
-$cake = new Cheesecake\Generator($template, [], $output);
-$cake->run();
+Usage:
+  cheesecake    TEMPLATE
+  cheesecake    [-o OUTPUTDIR] [-fD] [-c BRANCH] TEMPLATE
+  cheesecake    (-h | --help)
+  cheesecake    (-v | --version)
+
+Options:
+    -f --force      Overwrite the contents of the output directory if it already exists
+    -o --output     The output directory. Defaults to '.'
+    -c, --checkout  branch, tag or commit id to checkout after git clone
+    -D, --debug     Print debug information
+    -h --help
+    -v --version
+
+DOC;
+
+$args = Docopt::handle($doc, array('version'=>'Cheesecake 0.1'));
+$gen = new Cheesecake\Generator($args['TEMPLATE'], [], $args['OUTPUTDIR']);
+$gen->run();

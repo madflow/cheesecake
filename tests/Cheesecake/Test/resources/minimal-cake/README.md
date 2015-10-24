@@ -1,2 +1,2 @@
 {{%FILTERS}}
-# {{ cheesecake.app_name | case.upperfirst }}
+# {{ cheesecake.app_name | string.upperCaseFirst }}

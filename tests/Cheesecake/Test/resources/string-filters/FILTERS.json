@@ -1,0 +1,10 @@
+{{%FILTERS}}
+{
+    "toLowerCase": "{{cheesecake.app_name | string.toLowerCase}}",
+    "toUpperCase": "{{cheesecake.app_name | string.toUpperCase}}",
+    "camelize": "{{cheesecake.app_name | string.camelize}}",
+    "upperCamelize": "{{cheesecake.app_name | string.upperCamelize}}",
+    "humanize": "{{cheesecake.app_name | string.humanize}}",
+    "upperCaseFirst": "{{cheesecake.app_name | string.upperCaseFirst}}",
+    "lowerCaseFirst": "{{cheesecake.app_name | string.lowerCaseFirst}}"
+}
