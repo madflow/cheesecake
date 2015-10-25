@@ -48,7 +48,7 @@ class GeneratorTest extends TestCase
         $o = new Generator($template, ['app_name' => 'YO'], $options);
         $o->run();
 
-        $this->assertEquals('# Y0',
+        $this->assertEquals('# YO',
             trim(file_get_contents($output.'/README.md'))
         );
 
