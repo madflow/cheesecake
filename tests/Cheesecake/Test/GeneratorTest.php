@@ -26,10 +26,32 @@ class GeneratorTest extends TestCase
     {
         $template = __DIR__ .'/resources/minimal-cake';
         $output = $this->createTemporaryOutput();
-        $o = new Generator($template, [], $output);
+        $options = [
+            Generator::OPT_OUTPUT => $output,
+            Generator::OPT_NO_INTERACTION => true,
+        ];
+        $o = new Generator($template, [], $options);
         $o->run();
 
         $this->assertMinimalCake($output);
+        $this->clean($output);
+    }
+
+    public function testRunConstructorParams()
+    {
+        $template = __DIR__ .'/resources/minimal-cake';
+        $output = $this->createTemporaryOutput();
+        $options = [
+            Generator::OPT_OUTPUT => $output,
+            Generator::OPT_NO_INTERACTION => true,
+        ];
+        $o = new Generator($template, ['app_name' => 'YO'], $options);
+        $o->run();
+
+        $this->assertEquals('# Y0',
+            trim(file_get_contents($output.'/README.md'))
+        );
+
         $this->clean($output);
     }
 
@@ -39,7 +61,7 @@ class GeneratorTest extends TestCase
         mkdir($output);
         chdir($output);
         $template = __DIR__ .'/resources/minimal-cake';
-        $o = new Generator($template, []);
+        $o = new Generator($template, [], [Generator::OPT_NO_INTERACTION => true]);
         $o->run();
 
         $this->assertMinimalCake($output);
@@ -72,7 +94,11 @@ class GeneratorTest extends TestCase
     {
         $template = __DIR__ .'/resources/string-filters';
         $output = $this->createTemporaryOutput();
-        $o = new Generator($template, [], $output);
+        $options = [
+            Generator::OPT_OUTPUT => $output,
+            Generator::OPT_NO_INTERACTION => true,
+        ];
+        $o = new Generator($template, [], $options);
         $o->run();
 
         $json = json_decode(file_get_contents($output.'/FILTERS.json'));
@@ -102,7 +128,7 @@ class GeneratorTest extends TestCase
         /**
         $template = __DIR__ .'/resources/recursive-directories';
         $output = sys_get_temp_dir().'/'.uniqid();
-        $o = new Generator($template, [], $output);
+        $o = new Generator($template, [], [Generator::OPT_OUTPUT => $output ]);
         $o->run();
 
         $this->clean($output);

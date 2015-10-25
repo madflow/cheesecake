@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c3871c39c6bce45360ef175cb07edb06",
-    "content-hash": "e534f839d0fc2d04c073785c6a0a8dbc",
+    "hash": "6be4be6e5a4b494b7484af9aa6d94a93",
+    "content-hash": "f00fe17446a715e549ba0937ffd54037",
     "packages": [
         {
             "name": "cypresslab/gitelephant",
@@ -663,6 +663,56 @@
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
             "time": "2015-09-19 19:59:23"
+        },
+        {
+            "name": "wp-cli/php-cli-tools",
+            "version": "v0.10.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wp-cli/php-cli-tools.git",
+                "reference": "037a010441a5c220cd1df26cdc9b20ad73408356"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wp-cli/php-cli-tools/zipball/037a010441a5c220cd1df26cdc9b20ad73408356",
+                "reference": "037a010441a5c220cd1df26cdc9b20ad73408356",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">= 5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "cli": "lib/"
+                },
+                "files": [
+                    "lib/cli/cli.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "James Logsdon",
+                    "email": "jlogsdon@php.net",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Daniel Bachhuber",
+                    "email": "daniel@handbuilt.co",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "Console utilities for PHP",
+            "homepage": "http://github.com/wp-cli/php-cli-tools",
+            "keywords": [
+                "cli",
+                "console"
+            ],
+            "time": "2015-08-10 12:46:19"
         }
     ],
     "packages-dev": [

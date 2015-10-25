@@ -11,24 +11,25 @@ ini_set('error_reporting', E_ALL);
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $doc = <<<DOC
+
 Cheesecake
 
 Usage:
   cheesecake    TEMPLATE
-  cheesecake    [-o OUTPUTDIR] [-fD] [-c BRANCH] TEMPLATE
+  cheesecake    [-fDn] [-o OUTPUTDIR] TEMPLATE
   cheesecake    (-h | --help)
   cheesecake    (-v | --version)
 
 Options:
-    -f --force      Overwrite the contents of the output directory if it already exists
-    -o --output     The output directory. Defaults to '.'
-    -c, --checkout  branch, tag or commit id to checkout after git clone
-    -D, --debug     Print debug information
+    -o --output          The output directory. Defaults to '.'
+    -f --force           Force
+    -D --debug           Debug
+    -n --no-interaction  No interaction
     -h --help
     -v --version
 
 DOC;
 
 $args = Docopt::handle($doc, array('version'=>'Cheesecake 0.1'));
-$gen = new Cheesecake\Generator($args['TEMPLATE'], [], $args['OUTPUTDIR']);
+$gen = new Cheesecake\Generator($args['TEMPLATE'], [], $args->args);
 $gen->run();

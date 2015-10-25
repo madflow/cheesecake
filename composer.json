@@ -11,7 +11,8 @@
         "mustache/mustache": "^2.9",
         "docopt/docopt": "1.0.0",
         "cypresslab/gitelephant": "~1.0",
-        "danielstjules/stringy": "~1.8.0"
+        "danielstjules/stringy": "~1.8.0",
+        "wp-cli/php-cli-tools": "^0.10.5"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.0.8"

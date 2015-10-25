@@ -6,6 +6,8 @@ use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use GitElephant\Repository;
 use Stringy\StaticStringy as Stringy;
+use cli;
+
 
 class CheesecakeException extends \Exception{}
 class CheesecakeNotFoundExeption extends CheesecakeException{}
@@ -19,20 +21,27 @@ class Generator
     const TEMPLATE_TYPE_REMOTE_GIT = 2;
     const TEMPLATE_TYPE_LOCAL_GIT = 3;
 
+    const OPT_OUTPUT='OUTPUTDIR';
+    const OPT_NO_INTERACTION='--no-interaction';
+
     private $template;
     private $templateType;
     private $params;
     private $output;
+    private $noInteraction;
+
     private $mustache;
     private $fs;
 
-    public function __construct($template, array $params = [], $output = '.')
+    public function __construct($template, array $params = [], array $options=[])
     {
         $this->template = $template;
         $this->templateType = $this->detectTemplateType($template);
         $this->params = $params;
-        $this->output = $output;
-
+        $this->output = $this->getoa($options, self::OPT_OUTPUT, '.');
+        $this->noInteraction = $this->getoa(
+            $options, self::OPT_NO_INTERACTION, false
+        );
         $this->mustache = new \Mustache_Engine();
         $this->mustache->addHelper('string', [
             'toLowerCase' => function ($value) { return Stringy::toLowerCase($value); },
@@ -40,10 +49,17 @@ class Generator
             'upperCaseFirst' => function ($value) { return Stringy::upperCaseFirst($value); },
             'lowerCaseFirst' => function ($value) { return Stringy::lowerCaseFirst($value); },
             'humanize' => function ($value) { return Stringy::humanize($value); },
-            'camelize' => function ($value) { return Stringy::camelize($value); },
+            'camelize' => function (    $value) { return Stringy::camelize($value); },
             'upperCamelize' => function ($value) { return Stringy::upperCamelize($value); },
         ]);
         $this->fs = new Filesystem();
+    }
+
+    private function getoa(array $options, $name, $default)
+    {
+        return (
+            isset($options[$name]) OR isset($options['--'.$name])
+        ) ? $options[$name] : $default;
     }
 
     private function detectTemplateType($template)
@@ -84,6 +100,18 @@ class Generator
         $replace = [];
         if(is_file($cakeJson)) {
             $args = json_decode(file_get_contents($cakeJson), true);
+
+            // Detect if we need the cli promt
+            $diff = array_diff(array_keys($args), array_keys($this->params));
+            if(count($diff) > 0 AND false === $this->noInteraction) {
+                foreach($args as $key => $value) { // :S
+                    $args[$key] = cli\prompt(
+                        $key, $value, $marker = ' : '
+                    );
+                }
+            } else { // Merge constructor params with cheesecake.json
+                $args = array_merge($args, $this->params);
+            }
             $replace = ['cheesecake' => $args];
         }
 
