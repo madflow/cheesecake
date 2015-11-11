@@ -42,7 +42,8 @@ class Generator
         $this->noInteraction = $this->getoa(
             $options, self::OPT_NO_INTERACTION, false
         );
-        $this->mustache = new \Mustache_Engine();
+        $options = ['pragmas' => [\Mustache_Engine::PRAGMA_FILTERS]];
+        $this->mustache = new \Mustache_Engine($options);
         $this->mustache->addHelper('string', [
             'toLowerCase' => function ($value) { return Stringy::toLowerCase($value); },
             'toUpperCase' => function ($value) { return Stringy::toUpperCase($value); },
@@ -123,6 +124,10 @@ class Generator
         $this->processDirs($tmpDir, $replace);
         $this->processFiles($tmpDir, $replace);
 
+        if (!$this->fs->delete($tmpDir.DIRECTORY_SEPARATOR.'cheesecake.json')) {
+            throw new CheesecakeFilesystemExeption();
+        }
+
         if (!$this->fs->copyDirectory($tmpDir, $this->output)) {
             throw new CheesecakeFilesystemExeption();
         }
@@ -137,22 +142,36 @@ class Generator
     protected function processDirs($tmpDir, $replace)
     {
         $finder = new Finder();
-        $iterator = $finder
+        $dirIterator = $finder
             ->directories()
             ->ignoreUnreadableDirs()
             ->sort(function(\SplFileInfo $a, \SplFileInfo $b) {
                 return strlen($a->getRealpath()) > strlen($b->getRealpath());
             })
             ->in($tmpDir);
+        $this->renameFilesDirs($dirIterator, $replace);
 
+        $filesIterator = $finder
+            ->files()
+            ->ignoreUnreadableDirs()
+            ->sort(function(\SplFileInfo $a, \SplFileInfo $b) {
+                return strlen($a->getRealpath()) > strlen($b->getRealpath());
+            })
+            ->in($tmpDir);
+        $this->renameFilesDirs($filesIterator, $replace);
+    }
+
+    protected function renameFilesDirs($iterator, $replace) {
         foreach ($iterator as $dir) {
             $parts = explode(DIRECTORY_SEPARATOR, $dir->getRealpath());
-            $renamed = $this->mustache->render($dir->getRealpath(), $replace);
-            if ($renamed === $dir->getRealpath()) {
-                continue;
-            }
-            if (!$this->fs->move($dir, $renamed)) {
-                throw new CheesecakeFilesystemExeption();
+            while($deepest = array_pop($parts)) {
+                $renamed = $this->mustache->render($deepest, $replace);
+                $leadingName = implode(DIRECTORY_SEPARATOR, $parts);
+                $oldName = $leadingName.DIRECTORY_SEPARATOR.$deepest;
+                $newName = $leadingName.DIRECTORY_SEPARATOR.$renamed;
+                if (!$this->fs->move($oldName, $newName)) {
+                    throw new CheesecakeFilesystemExeption();
+                }
             }
         }
     }

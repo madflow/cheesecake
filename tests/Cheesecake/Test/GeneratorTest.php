@@ -85,6 +85,18 @@ class GeneratorTest extends TestCase
             is_file($output.'/cheesecake/.env')
         );
 
+        $this->assertTrue(
+            is_file($output.'/cheesecake/cheesecake.ini')
+        );
+
+        $this->assertTrue(
+            is_file($output.'/cheesecake/config/cheesecake.yml')
+        );
+
+        $this->assertTrue(
+            !is_file($output.'/'.'cheesecake.json')
+        );
+
         $this->assertEquals(
             'cheesecake', trim(file_get_contents($output.'/cheesecake/.env'))
         );
@@ -125,14 +137,16 @@ class GeneratorTest extends TestCase
 
     public function testRecursiceDirectories()
     {
-        /**
         $template = __DIR__ .'/resources/recursive-directories';
         $output = sys_get_temp_dir().'/'.uniqid();
-        $o = new Generator($template, [], [Generator::OPT_OUTPUT => $output ]);
+        $options = [
+            Generator::OPT_OUTPUT => $output,
+            Generator::OPT_NO_INTERACTION => true,
+        ];
+        $o = new Generator($template, [], $options);
         $o->run();
 
         $this->clean($output);
-        */
     }
 
     protected function createTemporaryOutput()

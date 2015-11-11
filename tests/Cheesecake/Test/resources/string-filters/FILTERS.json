@@ -1,4 +1,3 @@
-{{%FILTERS}}
 {
     "toLowerCase": "{{cheesecake.app_name | string.toLowerCase}}",
     "toUpperCase": "{{cheesecake.app_name | string.toUpperCase}}",
