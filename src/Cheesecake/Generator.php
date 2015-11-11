@@ -52,6 +52,7 @@ class Generator
             'humanize' => function ($value) { return Stringy::humanize($value); },
             'camelize' => function (    $value) { return Stringy::camelize($value); },
             'upperCamelize' => function ($value) { return Stringy::upperCamelize($value); },
+            'slugify' => function ($value) { return Stringy::slugify($value); },
         ]);
         $this->fs = new Filesystem();
     }
@@ -139,10 +140,18 @@ class Generator
 
         $this->processHook('post_gen.php', $this->output);
 
+        $hookDir = $this->output.DIRECTORY_SEPARATOR.'hooks';
+
+        if(is_dir($hookDir)) {
+            if (!$this->fs->deleteDirectory($hookDir)) {
+                throw new CheesecakeFilesystemExeption();
+            }
+        }
+
         return true;
     }
 
-    protected function processDirs($tmpDir, $replace)
+    private function processDirs($tmpDir, $replace)
     {
         $finder = new Finder();
         $dirIterator = $finder
@@ -164,7 +173,7 @@ class Generator
         $this->renameFilesDirs($filesIterator, $replace);
     }
 
-    protected function renameFilesDirs($iterator, $replace) {
+    private function renameFilesDirs($iterator, $replace) {
         foreach ($iterator as $dir) {
             $parts = explode(DIRECTORY_SEPARATOR, $dir->getRealpath());
             while($deepest = array_pop($parts)) {
@@ -184,7 +193,7 @@ class Generator
         }
     }
 
-    protected function processFiles($tmpDir, $replace)
+    private function processFiles($tmpDir, $replace)
     {
         $finder = new Finder();
         $iterator = $finder

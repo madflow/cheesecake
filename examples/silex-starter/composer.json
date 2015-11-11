@@ -1,0 +1,13 @@
+{
+    "name": "{{cheesecake.package_name | string.slugify}}/{{cheesecake.package_name | string.slugify}}",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "{{cheesecake.author}}",
+            "email": "{{cheesecake.email}}"
+        }
+    ],
+    "require": {
+        "silex/silex": "~1.3"
+    }
+}

@@ -132,6 +132,10 @@ class GeneratorTest extends TestCase
         $this->assertEquals(
             $json->upperCaseFirst, 'Hello Good Sir!'
         );
+        $this->assertEquals(
+            $json->slugify, 'hello-good-sir'
+        );
+
         $this->clean($output);
     }
 
@@ -168,6 +172,10 @@ class GeneratorTest extends TestCase
         );
         $this->assertEquals('# Hello',
             trim(file_get_contents($output.'/README.md'))
+        );
+
+        $this->assertTrue(
+            !is_dir($output.'/hooks')
         );
 
         $this->clean($output);
