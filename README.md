@@ -1,6 +1,4 @@
-[![Build Status Travis](https://travis-ci.org/madflow/cheesecake.png?branch=master)](https://travis-ci.org/madflow/cheesecake)
-
-[![Build Status Appveyor](https://ci.appveyor.com/api/projects/status/07ik73aibio5w4p7?svg=true)](https://ci.appveyor.com/project/madflow/cheesecake)
+[![Build Status Travis](https://travis-ci.org/madflow/cheesecake.png?branch=master)](https://travis-ci.org/madflow/cheesecake)[![Build Status Appveyor](https://ci.appveyor.com/api/projects/status/07ik73aibio5w4p7?svg=true)](https://ci.appveyor.com/project/madflow/cheesecake)
 
 #  Cheesecake - the best!
 
