@@ -149,6 +149,30 @@ class GeneratorTest extends TestCase
         $this->clean($output);
     }
 
+    public function testHooks()
+    {
+        $template = __DIR__ .'/resources/hooks';
+        $output = sys_get_temp_dir().'/'.uniqid();
+        $options = [
+            Generator::OPT_OUTPUT => $output,
+            Generator::OPT_NO_INTERACTION => true,
+        ];
+        $o = new Generator($template, [], $options);
+        $o->run();
+
+        $this->assertTrue(
+            is_dir($output.'/hello')
+        );
+        $this->assertTrue(
+            is_file($output.'/README.md')
+        );
+        $this->assertEquals('# Hello',
+            trim(file_get_contents($output.'/README.md'))
+        );
+
+        $this->clean($output);
+    }
+
     protected function createTemporaryOutput()
     {
         return sys_get_temp_dir().'/'.sha1(uniqid());

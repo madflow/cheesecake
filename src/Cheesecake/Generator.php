@@ -121,6 +121,7 @@ class Generator
             throw new CheesecakeFilesystemExeption();
         }
 
+        $this->processHook('pre_gen.php', $tmpDir);
         $this->processDirs($tmpDir, $replace);
         $this->processFiles($tmpDir, $replace);
 
@@ -135,6 +136,8 @@ class Generator
         if (!$this->fs->deleteDirectory($tmpDir)) {
             throw new CheesecakeFilesystemExeption();
         }
+
+        $this->processHook('post_gen.php', $this->output);
 
         return true;
     }
@@ -173,7 +176,7 @@ class Generator
                 if($oldName === $newName) {
                     continue;
                 }
-                
+
                 if (!$this->fs->move($oldName, $newName)) {
                     throw new CheesecakeFilesystemExeption();
                 }
@@ -193,6 +196,19 @@ class Generator
         foreach ($iterator as $file) {
             $rendered = $this->mustache->render($file->getContents(), $replace);
             file_put_contents($file->getRealpath(), $rendered);
+        }
+    }
+
+    private function processHook($hook, $workingDir)
+    {
+        $hookDir = $workingDir.DIRECTORY_SEPARATOR.'hooks';
+
+        if(!is_dir($hookDir)) {
+            return;
+        }
+        if(is_file($hookDir.DIRECTORY_SEPARATOR.$hook)) {
+            chdir($workingDir);
+            include $hookDir.DIRECTORY_SEPARATOR.$hook;
         }
     }
 }
