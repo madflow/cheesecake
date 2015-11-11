@@ -169,6 +169,11 @@ class Generator
                 $leadingName = implode(DIRECTORY_SEPARATOR, $parts);
                 $oldName = $leadingName.DIRECTORY_SEPARATOR.$deepest;
                 $newName = $leadingName.DIRECTORY_SEPARATOR.$renamed;
+
+                if($oldName === $newName) {
+                    continue;
+                }
+                
                 if (!$this->fs->move($oldName, $newName)) {
                     throw new CheesecakeFilesystemExeption();
                 }
