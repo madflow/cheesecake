@@ -4,3 +4,25 @@
 
 Cheesecake is a project/directory skeleton generator thingy for PHP. It is inspired by
 https://github.com/audreyr/cookiecutter.
+
+# Get started
+
+```
+# Clone the repo
+git clone https://github.com/madflow/cheesecake.git
+
+# Install dependencies
+cd cheesecake
+composer install
+```
+
+# Examples
+
+##### Create a Silex starter project
+```
+# Create output directory
+mkdir /tmp/silex
+
+# Mmmh  - Cheesecake
+./bin/cheesecake -o /tmp/silex examples/silex-starter
+```
