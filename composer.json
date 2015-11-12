@@ -2,6 +2,8 @@
     "name": "madflow/cheesecake",
     "description": "Create projects or directory structures from templates",
     "license": "MIT",
+    "keywords": ["generator", "project", "starter", "bootstrap"],
+    "homepage": "https://github.com/madflow/cheesecake",
     "authors": [{
         "name": "madflow",
         "email": "madflow@domain.invalid"
