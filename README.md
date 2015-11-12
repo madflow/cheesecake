@@ -26,3 +26,7 @@ mkdir /tmp/silex
 # Mmmh  - Cheesecake
 ./bin/cheesecake -o /tmp/silex examples/silex-starter
 ```
+
+# Hooks
+
+Put your hooks in ```hooks``` and name them ```pre_gen.php``` or ```post_gen.php```.
