@@ -2,17 +2,15 @@
 
 namespace Cheesecake;
 
+use Cheesecake\Exception\CheesecakeNotFoundExeption;
+use Cheesecake\Exception\CheesecakeUnknownTemplateException;
+use Cheesecake\Exception\CheesecakeFilesystemExeption;
+
 use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use GitElephant\Repository;
 use Stringy\StaticStringy as Stringy;
 use cli;
-
-
-class CheesecakeException extends \Exception{}
-class CheesecakeNotFoundExeption extends CheesecakeException{}
-class CheesecakeFilesystemExeption extends CheesecakeException{}
-class CheesecakeUnknownTemplateException extends CheesecakeException{}
 
 class Generator
 {
@@ -33,6 +31,13 @@ class Generator
     private $mustache;
     private $fs;
 
+    /**
+     * Let's do this ...
+     * @param $template string The path or url to a tasty cheesecake template
+     * @param $params array Optional parameters that are merged with existing
+     *                      params from a cheesecake.json file :O
+     * @param $options array Options
+     */
     public function __construct($template, array $params = [], array $options=[])
     {
         $this->template = $template;
@@ -42,6 +47,7 @@ class Generator
         $this->noInteraction = $this->getoa(
             $options, self::OPT_NO_INTERACTION, false
         );
+
         $options = ['pragmas' => [\Mustache_Engine::PRAGMA_FILTERS]];
         $this->mustache = new \Mustache_Engine($options);
         $this->mustache->addHelper('string', [
@@ -67,7 +73,7 @@ class Generator
     private function detectTemplateType($template)
     {
         if(is_dir($template)) {
-            if(is_dir($template.DIRECTORY_SEPARATOR.'.git')) {
+            if(is_dir($this->join($template, '.git'))) {
                 return self::TEMPLATE_TYPE_LOCAL_GIT;
             } else {
                 return self::TEMPLATE_TYPE_DIR;
@@ -85,13 +91,13 @@ class Generator
     public function run()
     {
         if($this->templateType === self::TEMPLATE_TYPE_DIR) {
-            $cakeJson = realpath($this->template).DIRECTORY_SEPARATOR.'cheesecake.json';
+            $cakeJson = $this->join(realpath($this->template), 'cheesecake.json');
         } else if($this->templateType === self::TEMPLATE_TYPE_REMOTE_GIT) {
             $repo = Repository::createFromRemote($this->template);
-            $cakeJson = realpath($repo->getPath()).DIRECTORY_SEPARATOR.'cheesecake.json';
+            $cakeJson = $this->join(realpath($repo->getPath()), 'cheesecake.json');
         } else if($this->templateType === self::TEMPLATE_TYPE_LOCAL_GIT) {
               $repo = Repository::open($this->template);
-              $cakeJson = realpath($repo->getPath()).DIRECTORY_SEPARATOR.'cheesecake.json';
+              $cakeJson = $this->join(realpath($repo->getPath()), 'cheesecake.json');
         } else {
             throw new CheesecakeUnknownTemplateException();
         }
@@ -99,6 +105,7 @@ class Generator
         if (!file_exists($cakeJson)) {
             throw new CheesecakeNotFoundExeption();
         }
+
         $replace = [];
         if(is_file($cakeJson)) {
             $args = json_decode(file_get_contents($cakeJson), true);
@@ -117,7 +124,7 @@ class Generator
             $replace = ['cheesecake' => $args];
         }
 
-        $tmpDir = sys_get_temp_dir().DIRECTORY_SEPARATOR.uniqid();
+        $tmpDir = $this->join(sys_get_temp_dir(), sha1(uniqid()));
         if (!$this->fs->copyDirectory($this->template, $tmpDir)) {
             throw new CheesecakeFilesystemExeption();
         }
@@ -126,7 +133,7 @@ class Generator
         $this->processDirs($tmpDir, $replace);
         $this->processFiles($tmpDir, $replace);
 
-        if (!$this->fs->delete($tmpDir.DIRECTORY_SEPARATOR.'cheesecake.json')) {
+        if (!$this->fs->delete($this->join($tmpDir, 'cheesecake.json'))) {
             throw new CheesecakeFilesystemExeption();
         }
 
@@ -140,7 +147,7 @@ class Generator
 
         $this->processHook('post_gen.php', $this->output);
 
-        $hookDir = $this->output.DIRECTORY_SEPARATOR.'hooks';
+        $hookDir = $this->join($this->output, 'hooks');
 
         if(is_dir($hookDir)) {
             if (!$this->fs->deleteDirectory($hookDir)) {
@@ -153,8 +160,8 @@ class Generator
 
     private function processDirs($tmpDir, $replace)
     {
-        $finder = new Finder();
-        $dirIterator = $finder
+        $finderDirs = new Finder();
+        $dirIterator = $finderDirs
             ->directories()
             ->ignoreUnreadableDirs()
             ->sort(function(\SplFileInfo $a, \SplFileInfo $b) {
@@ -163,7 +170,8 @@ class Generator
             ->in($tmpDir);
         $this->renameFilesDirs($dirIterator, $replace);
 
-        $filesIterator = $finder
+        $finderFiles = new Finder();
+        $filesIterator = $finderFiles
             ->files()
             ->ignoreUnreadableDirs()
             ->sort(function(\SplFileInfo $a, \SplFileInfo $b) {
@@ -179,8 +187,8 @@ class Generator
             while($deepest = array_pop($parts)) {
                 $renamed = $this->mustache->render($deepest, $replace);
                 $leadingName = implode(DIRECTORY_SEPARATOR, $parts);
-                $oldName = $leadingName.DIRECTORY_SEPARATOR.$deepest;
-                $newName = $leadingName.DIRECTORY_SEPARATOR.$renamed;
+                $oldName = $this->join($leadingName, $deepest);
+                $newName = $this->join($leadingName, $renamed);
 
                 if($oldName === $newName) {
                     continue;
@@ -210,14 +218,22 @@ class Generator
 
     private function processHook($hook, $workingDir)
     {
-        $hookDir = $workingDir.DIRECTORY_SEPARATOR.'hooks';
+        $hookDir = $this->join($workingDir, 'hooks');
 
         if(!is_dir($hookDir)) {
             return;
         }
-        if(is_file($hookDir.DIRECTORY_SEPARATOR.$hook)) {
+        if(is_file($this->join($hookDir, $hook))) {
             chdir($workingDir);
-            include $hookDir.DIRECTORY_SEPARATOR.$hook;
+            include $this->join($hookDir, $hook);
         }
+    }
+
+    /**
+     * Join positional arguments with the DIRECTORY_SEPARATOR constant
+     */
+    private function join()
+    {
+        return implode(DIRECTORY_SEPARATOR, func_get_args());
     }
 }
