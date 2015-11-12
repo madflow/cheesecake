@@ -5,7 +5,6 @@ clone_folder: C:\projects\cheesecake
 init:
   - cinst php
   - SET PATH=C:\tools\php\;%PATH%
-  - SET PATH=C:\tools\SQLite\;%PATH%
 install:
   - cd c:\tools\php
   - copy php.ini-production php.ini
