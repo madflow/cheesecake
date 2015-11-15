@@ -2,4 +2,6 @@
 
 namespace Cheesecake\Exception;
 
-class CheesecakeFilesystemExeption extends CheesecakeException {}
+class CheesecakeFilesystemExeption extends CheesecakeException
+{
+}

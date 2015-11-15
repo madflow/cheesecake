@@ -38,27 +38,45 @@ class Generator
      *                      params from a cheesecake.json file :O
      * @param $options array Options
      */
-    public function __construct($template, array $params = [], array $options=[])
+    public function __construct($template, array $params = [], array $options = [])
     {
         $this->template = $template;
         $this->templateType = $this->detectTemplateType($template);
         $this->params = $params;
         $this->output = $this->getoa($options, self::OPT_OUTPUT, '.');
         $this->noInteraction = $this->getoa(
-            $options, self::OPT_NO_INTERACTION, false
+            $options,
+            self::OPT_NO_INTERACTION,
+            false
         );
 
         $options = ['pragmas' => [\Mustache_Engine::PRAGMA_FILTERS]];
         $this->mustache = new \Mustache_Engine($options);
         $this->mustache->addHelper('string', [
-            'toLowerCase' => function ($value) { return Stringy::toLowerCase($value); },
-            'toUpperCase' => function ($value) { return Stringy::toUpperCase($value); },
-            'upperCaseFirst' => function ($value) { return Stringy::upperCaseFirst($value); },
-            'lowerCaseFirst' => function ($value) { return Stringy::lowerCaseFirst($value); },
-            'humanize' => function ($value) { return Stringy::humanize($value); },
-            'camelize' => function (    $value) { return Stringy::camelize($value); },
-            'upperCamelize' => function ($value) { return Stringy::upperCamelize($value); },
-            'slugify' => function ($value) { return Stringy::slugify($value); },
+            'toLowerCase' => function ($value) {
+                return Stringy::toLowerCase($value);
+            },
+            'toUpperCase' => function ($value) {
+                return Stringy::toUpperCase($value);
+            },
+            'upperCaseFirst' => function ($value) {
+                return Stringy::upperCaseFirst($value);
+            },
+            'lowerCaseFirst' => function ($value) {
+                return Stringy::lowerCaseFirst($value);
+            },
+            'humanize' => function ($value) {
+                return Stringy::humanize($value);
+            },
+            'camelize' => function ($value) {
+                return Stringy::camelize($value);
+            },
+            'upperCamelize' => function ($value) {
+                return Stringy::upperCamelize($value);
+            },
+            'slugify' => function ($value) {
+                return Stringy::slugify($value);
+            },
         ]);
         $this->fs = new Filesystem();
     }
@@ -72,30 +90,30 @@ class Generator
 
     private function detectTemplateType($template)
     {
-        if(is_dir($template)) {
-            if(is_dir($this->join($template, '.git'))) {
+        if (is_dir($template)) {
+            if (is_dir($this->join($template, '.git'))) {
                 return self::TEMPLATE_TYPE_LOCAL_GIT;
             } else {
                 return self::TEMPLATE_TYPE_DIR;
             }
         }
 
-        if(Stringy::startsWith($template, 'https')
+        if (Stringy::startsWith($template, 'https')
             || Stringy::startsWith($template, 'git')) {
                 return self::TEMPLATE_TYPE_REMOTE_GIT;
-            }
+        }
 
         return self::TEMPLATE_TYPE_UNKNOWN;
     }
 
     public function run()
     {
-        if($this->templateType === self::TEMPLATE_TYPE_DIR) {
+        if ($this->templateType === self::TEMPLATE_TYPE_DIR) {
             $cakeJson = $this->join(realpath($this->template), 'cheesecake.json');
-        } else if($this->templateType === self::TEMPLATE_TYPE_REMOTE_GIT) {
+        } elseif ($this->templateType === self::TEMPLATE_TYPE_REMOTE_GIT) {
             $repo = Repository::createFromRemote($this->template);
             $cakeJson = $this->join(realpath($repo->getPath()), 'cheesecake.json');
-        } else if($this->templateType === self::TEMPLATE_TYPE_LOCAL_GIT) {
+        } elseif ($this->templateType === self::TEMPLATE_TYPE_LOCAL_GIT) {
               $repo = Repository::open($this->template);
               $cakeJson = $this->join(realpath($repo->getPath()), 'cheesecake.json');
         } else {
@@ -107,15 +125,17 @@ class Generator
         }
 
         $replace = [];
-        if(is_file($cakeJson)) {
+        if (is_file($cakeJson)) {
             $args = json_decode(file_get_contents($cakeJson), true);
 
             // Detect if we need the cli promt
             $diff = array_diff(array_keys($args), array_keys($this->params));
-            if(count($diff) > 0 && false === $this->noInteraction) {
-                foreach($args as $key => $value) { // :S
+            if (count($diff) > 0 && false === $this->noInteraction) {
+                foreach ($args as $key => $value) { // :S
                     $args[$key] = cli\prompt(
-                        $key, $value, $marker = ' : '
+                        $key,
+                        $value,
+                        $marker = ' : '
                     );
                 }
             } else { // Merge constructor params with cheesecake.json
@@ -149,7 +169,7 @@ class Generator
 
         $hookDir = $this->join($this->output, 'hooks');
 
-        if(is_dir($hookDir)) {
+        if (is_dir($hookDir)) {
             if (!$this->fs->deleteDirectory($hookDir)) {
                 throw new CheesecakeFilesystemExeption();
             }
@@ -164,7 +184,7 @@ class Generator
         $dirIterator = $finderDirs
             ->directories()
             ->ignoreUnreadableDirs()
-            ->sort(function(\SplFileInfo $a, \SplFileInfo $b) {
+            ->sort(function (\SplFileInfo $a, \SplFileInfo $b) {
                 return strlen($a->getRealpath()) > strlen($b->getRealpath());
             })
             ->in($tmpDir);
@@ -174,23 +194,24 @@ class Generator
         $filesIterator = $finderFiles
             ->files()
             ->ignoreUnreadableDirs()
-            ->sort(function(\SplFileInfo $a, \SplFileInfo $b) {
+            ->sort(function (\SplFileInfo $a, \SplFileInfo $b) {
                 return strlen($a->getRealpath()) > strlen($b->getRealpath());
             })
             ->in($tmpDir);
         $this->renameFilesDirs($filesIterator, $replace);
     }
 
-    private function renameFilesDirs($iterator, $replace) {
+    private function renameFilesDirs($iterator, $replace)
+    {
         foreach ($iterator as $dir) {
             $parts = explode(DIRECTORY_SEPARATOR, $dir->getRealpath());
-            while($deepest = array_pop($parts)) {
+            while ($deepest = array_pop($parts)) {
                 $renamed = $this->mustache->render($deepest, $replace);
                 $leadingName = implode(DIRECTORY_SEPARATOR, $parts);
                 $oldName = $this->join($leadingName, $deepest);
                 $newName = $this->join($leadingName, $renamed);
 
-                if($oldName === $newName) {
+                if ($oldName === $newName) {
                     continue;
                 }
 
@@ -220,10 +241,10 @@ class Generator
     {
         $hookDir = $this->join($workingDir, 'hooks');
 
-        if(!is_dir($hookDir)) {
+        if (!is_dir($hookDir)) {
             return;
         }
-        if(is_file($this->join($hookDir, $hook))) {
+        if (is_file($this->join($hookDir, $hook))) {
             chdir($workingDir);
             include $this->join($hookDir, $hook);
         }

@@ -2,5 +2,6 @@
 
 namespace Cheesecake\Exception;
 
-
-class CheesecakeUnknownTemplateException extends CheesecakeException {}
+class CheesecakeUnknownTemplateException extends CheesecakeException
+{
+}

@@ -2,4 +2,6 @@
 
 namespace Cheesecake\Exception;
 
-class CheesecakeNotFoundExeption extends CheesecakeException {}
+class CheesecakeNotFoundExeption extends CheesecakeException
+{
+}
