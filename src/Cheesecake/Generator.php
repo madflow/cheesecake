@@ -66,7 +66,7 @@ class Generator
     private function getoa(array $options, $name, $default)
     {
         return (
-            isset($options[$name]) OR isset($options['--'.$name])
+            isset($options[$name]) || isset($options['--'.$name])
         ) ? $options[$name] : $default;
     }
 
@@ -81,7 +81,7 @@ class Generator
         }
 
         if(Stringy::startsWith($template, 'https')
-            OR Stringy::startsWith($template, 'git')) {
+            || Stringy::startsWith($template, 'git')) {
                 return self::TEMPLATE_TYPE_REMOTE_GIT;
             }
 
@@ -112,7 +112,7 @@ class Generator
 
             // Detect if we need the cli promt
             $diff = array_diff(array_keys($args), array_keys($this->params));
-            if(count($diff) > 0 AND false === $this->noInteraction) {
+            if(count($diff) > 0 && false === $this->noInteraction) {
                 foreach($args as $key => $value) { // :S
                     $args[$key] = cli\prompt(
                         $key, $value, $marker = ' : '
