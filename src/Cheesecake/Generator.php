@@ -125,24 +125,22 @@ class Generator
         }
 
         $replace = [];
-        if (is_file($cakeJson)) {
-            $args = json_decode(file_get_contents($cakeJson), true);
+        $args = json_decode(file_get_contents($cakeJson), true);
 
-            // Detect if we need the cli promt
-            $diff = array_diff(array_keys($args), array_keys($this->params));
-            if (count($diff) > 0 && false === $this->noInteraction) {
-                foreach ($args as $key => $value) { // :S
-                    $args[$key] = cli\prompt(
-                        $key,
-                        $value,
-                        $marker = ' : '
-                    );
-                }
-            } else { // Merge constructor params with cheesecake.json
-                $args = array_merge($args, $this->params);
+        // Detect if we need the cli promt
+        $diff = array_diff(array_keys($args), array_keys($this->params));
+        if (count($diff) > 0 && false === $this->noInteraction) {
+            foreach ($args as $key => $value) { // :S
+                $args[$key] = cli\prompt(
+                    $key,
+                    $value,
+                    $marker = ' : '
+                );
             }
-            $replace = ['cheesecake' => $args];
+        } else { // Merge constructor params with cheesecake.json
+            $args = array_merge($args, $this->params);
         }
+        $replace = ['cheesecake' => $args];
 
         $tmpDir = $this->join(sys_get_temp_dir(), sha1(uniqid()));
         if (!$this->fs->copyDirectory($this->template, $tmpDir)) {
