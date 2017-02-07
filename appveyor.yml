@@ -1,23 +1,33 @@
 build: false
-shallow_clone: false
-platform: 'x86'
+shallow_clone: true
+platform:
+  - x86
+  - x64
 clone_folder: C:\projects\cheesecake
+
+cache:
+  - c:\tools\php -> appveyor.yml
+
 init:
-  - cinst php
-  - SET PATH=C:\tools\php\;%PATH%
+  - SET PATH=C:\Program Files\OpenSSL;c:\tools\php;%PATH%
+  - SET COMPOSER_NO_INTERACTION=1
+  - SET PHP=1
+  - SET ANSICON=121x90 (121x90)
+
 install:
+  - IF EXIST c:\tools\php (SET PHP=0)
+  - IF %PHP%==1 cinst -y OpenSSL.Light
+  - IF %PHP%==1 cinst -y php
   - cd c:\tools\php
-  - copy php.ini-production php.ini
-  - echo date.timezone="UTC" >> php.ini
-  - echo extension_dir=ext >> php.ini
-  - echo extension=php_openssl.dll >> php.ini
-  - echo extension=php_intl.dll >> php.ini
-  - echo extension=php_mbstring.dll >> php.ini
-  - echo extension=php_fileinfo.dll >> php.ini
-  - echo extension=php_curl.dll >> php.ini
+  - IF %PHP%==1 copy php.ini-production php.ini /Y
+  - IF %PHP%==1 echo date.timezone="UTC" >> php.ini
+  - IF %PHP%==1 echo extension_dir=ext >> php.ini
+  - IF %PHP%==1 echo extension=php_openssl.dll >> php.ini
+  - IF %PHP%==1 echo extension=php_mbstring.dll >> php.ini
+- IF %PHP%==1 echo extension=php_fileinfo.dll >> php.ini
   - cd C:\projects\cheesecake
-  - php -r "readfile('https://getcomposer.org/installer');" | php
+  - appveyor DownloadFile https://getcomposer.org/composer.phar
   - php composer.phar install --prefer-dist --no-interaction
 test_script:
   - cd C:\projects\cheesecake
-  - vendor\bin\phpunit.bat
+  - vendor\bin\phpunit.bat --colors=always
