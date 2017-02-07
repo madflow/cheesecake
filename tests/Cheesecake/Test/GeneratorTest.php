@@ -14,14 +14,6 @@ class GeneratorTest extends TestCase
         $o = new Generator($template);
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error
-     */
-    public function testInvalidInstance()
-    {
-        $o = new Generator();
-    }
-
     public function testRunMinimal()
     {
         $template = __DIR__ .'/resources/minimal-cake';
@@ -177,6 +169,18 @@ class GeneratorTest extends TestCase
         $this->assertTrue(
             !is_dir($output.'/hooks')
         );
+
+        $this->clean($output);
+    }
+
+    public function testRunOnTwig()
+    {
+        $output = $this->createTemporaryOutput();
+        mkdir($output);
+        chdir($output);
+        $template = __DIR__ .'/resources/twig';
+        $o = new Generator($template, [], [Generator::OPT_NO_INTERACTION => true]);
+        $o->run();
 
         $this->clean($output);
     }

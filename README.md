@@ -30,3 +30,16 @@ mkdir /tmp/silex
 # Hooks
 
 Put your hooks in ```hooks``` and name them ```pre_gen.php``` or ```post_gen.php```.
+
+# Hacks
+
++ When processing Twig templates the Mustache engine tries to interpret expressions like ```{{ okay | upper }}``` and will fail with ```Mustache_Exception_UnknownFilterException: Unknown filter: upper```
++  In order to circumvent this, it is possible to define a magic ```filters_ignore``` parameter in your ```cheesecake.json``` file.
+
+```
+    {
+        "app_name": "twig",
+        "filters_ignore": ["upper"]
+    }
+```
++ ```filters_ignore``` excepts an array of strings which will be translated to dummy filters.

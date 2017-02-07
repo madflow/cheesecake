@@ -127,7 +127,22 @@ class Generator
         $replace = [];
         $args = json_decode(file_get_contents($cakeJson), true);
 
-        // Detect if we need the cli promt
+        // Hack for ie. twig templates
+        // create dummy filters
+        if(isset($args['filters_ignore'])) {
+            $ignoreFilters = $args['filters_ignore'];
+            if(is_array($ignoreFilters)) {
+                foreach($ignoreFilters as $filter) {
+                    $this->mustache->addHelper($filter, function($value) {
+                        return $value;
+                    });
+                }
+            }
+
+            unset($args['filters_ignore']); 
+        }
+
+        // Detect if we need the cli prompt
         $diff = array_diff(array_keys($args), array_keys($this->params));
         if (count($diff) > 0 && false === $this->noInteraction) {
             foreach ($args as $key => $value) { // :S
