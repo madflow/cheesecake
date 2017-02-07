@@ -108,14 +108,19 @@ class Generator
 
     public function run()
     {
+        $localTemplate = null;
+
         if ($this->templateType === self::TEMPLATE_TYPE_DIR) {
             $cakeJson = $this->join(realpath($this->template), 'cheesecake.json');
+            $localTemplate = $this->template;
         } elseif ($this->templateType === self::TEMPLATE_TYPE_REMOTE_GIT) {
             $repo = Repository::createFromRemote($this->template);
             $cakeJson = $this->join(realpath($repo->getPath()), 'cheesecake.json');
+            $localTemplate = $repo->getPath();
         } elseif ($this->templateType === self::TEMPLATE_TYPE_LOCAL_GIT) {
               $repo = Repository::open($this->template);
               $cakeJson = $this->join(realpath($repo->getPath()), 'cheesecake.json');
+              $localTemplate = $repo->getPath();
         } else {
             throw new CheesecakeUnknownTemplateException();
         }
@@ -129,17 +134,17 @@ class Generator
 
         // Hack for ie. twig templates
         // create dummy filters
-        if(isset($args['filters_ignore'])) {
+        if (isset($args['filters_ignore'])) {
             $ignoreFilters = $args['filters_ignore'];
-            if(is_array($ignoreFilters)) {
-                foreach($ignoreFilters as $filter) {
-                    $this->mustache->addHelper($filter, function($value) {
+            if (is_array($ignoreFilters)) {
+                foreach ($ignoreFilters as $filter) {
+                    $this->mustache->addHelper($filter, function ($value) {
                         return $value;
                     });
                 }
             }
 
-            unset($args['filters_ignore']); 
+            unset($args['filters_ignore']);
         }
 
         // Detect if we need the cli prompt
@@ -158,7 +163,9 @@ class Generator
         $replace = ['cheesecake' => $args];
 
         $tmpDir = $this->join(sys_get_temp_dir(), sha1(uniqid()));
-        if (!$this->fs->copyDirectory($this->template, $tmpDir)) {
+        try {
+            $this->fs->copyDirectory($localTemplate, $tmpDir);
+        } catch (\Exception $e) {
             throw new CheesecakeFilesystemExeption();
         }
 
