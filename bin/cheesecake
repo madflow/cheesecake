@@ -17,6 +17,7 @@ Cheesecake
 Usage:
   cheesecake    TEMPLATE
   cheesecake    [-fDn] [-o OUTPUTDIR] TEMPLATE
+  cheesecake    [-fDn] [-r REPLACEMENTS] [-o OUTPUTDIR] TEMPLATE
   cheesecake    (-h | --help)
   cheesecake    (-v | --version)
   cheesecake    [-r REPLACEMENTS] [-o OUTPUTDIR] TEMPLATE
