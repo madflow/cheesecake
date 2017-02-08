@@ -20,6 +20,7 @@ class Generator
     const TEMPLATE_TYPE_LOCAL_GIT = 3;
 
     const OPT_OUTPUT='OUTPUTDIR';
+    const OPT_REPLACCEMENT='REPLACEMENTS';
     const OPT_NO_INTERACTION='--no-interaction';
 
     private $template;
@@ -27,6 +28,7 @@ class Generator
     private $params;
     private $output;
     private $noInteraction;
+    private $replacements;
 
     private $mustache;
     private $fs;
@@ -49,6 +51,7 @@ class Generator
             self::OPT_NO_INTERACTION,
             false
         );
+        $this->replacements = $this->parseReplacements($this->getoa($options, self::OPT_REPLACCEMENT, []));
 
         $options = ['pragmas' => [\Mustache_Engine::PRAGMA_FILTERS]];
         $this->mustache = new \Mustache_Engine($options);
@@ -79,6 +82,26 @@ class Generator
             },
         ]);
         $this->fs = new Filesystem();
+    }
+
+    private function parseReplacements($replacements)
+    {
+        if(is_array($replacements)){
+            return $replacements;
+        }
+
+        $keyValuePairs = explode(',', $replacements);
+
+        $replacementsArr = [];
+        foreach($keyValuePairs as $keyValuePair) {
+            $parts = explode(':', $keyValuePair);
+            $key = (isset($parts[0])) ? $parts[0] : '';
+            $value = (isset($parts[1])) ? $parts[1] : '';
+
+            $replacementsArr[$key] = $value;
+        }
+        
+        return $replacementsArr;
     }
 
     private function getoa(array $options, $name, $default)
@@ -131,6 +154,7 @@ class Generator
 
         $replace = [];
         $args = json_decode(file_get_contents($cakeJson), true);
+        $args = array_merge($args, $this->replacements);
 
         // Hack for ie. twig templates
         // create dummy filters
@@ -265,7 +289,7 @@ class Generator
             return;
         }
         if (is_file($this->join($hookDir, $hook))) {
-            chdir($workingDir);
+            chdir($workingDir); // if working dir is explicit set, this cause an Error ... ?!
             include $this->join($hookDir, $hook);
         }
     }
