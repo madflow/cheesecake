@@ -5,7 +5,28 @@
 Cheesecake is a project/directory skeleton generator thingy for PHP. It is inspired by
 https://github.com/audreyr/cookiecutter.
 
-# Get started
+# Installation
+
+```
+    $ composer require madflow/cheesecake
+    $ ./vendor/bin/cheesecake
+```
+
+# Use it without the cli
+
+```php
+    $template = __DIR__ .'/mytemplate';
+    $output = __DIR__ .'/myoutput';
+    $params = ['project_name' => 'Yeah!'];
+    $options = [
+        Generator::OPT_OUTPUT => $output,
+        Generator::OPT_NO_INTERACTION => true,
+    ];
+    $o = new Generator($template, $params, $options);
+    $o->run();
+```
+
+# Development
 
 ```
 # Clone the repo
