@@ -1,1 +1,1 @@
-# {cheesecake.app_name}
+# {{cheesecake.project_name}}
