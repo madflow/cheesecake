@@ -33,8 +33,10 @@ Cheesecake
 Usage:
   cheesecake    TEMPLATE
   cheesecake    [-fDn] [-o OUTPUTDIR] TEMPLATE
+  cheesecake    [-fDn] [-r REPLACEMENTS] [-o OUTPUTDIR] TEMPLATE
   cheesecake    (-h | --help)
   cheesecake    (-v | --version)
+  cheesecake    [-r REPLACEMENTS] [-o OUTPUTDIR] TEMPLATE
 
 Options:
     -o --output          The output directory. Defaults to '.'
@@ -43,7 +45,8 @@ Options:
     -n --no-interaction  No interaction
     -h --help
     -v --version
-
+    -r --replacements    Add replacements
+    
 DOC;
 
 $args = Docopt::handle($doc, array('version'=>'Cheesecake 0.1'));
