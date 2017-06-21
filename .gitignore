@@ -35,5 +35,5 @@
 
 # Composer PHAR
 /composer.phar
-idea
+.idea
 composer.lock 

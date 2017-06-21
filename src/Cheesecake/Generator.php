@@ -6,7 +6,8 @@ use Cheesecake\Exception\CheesecakeNotFoundExeption;
 use Cheesecake\Exception\CheesecakeUnknownTemplateException;
 use Cheesecake\Exception\CheesecakeFilesystemExeption;
 
-use Illuminate\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOException;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use GitElephant\Repository;
 use Stringy\StaticStringy as Stringy;
@@ -164,7 +165,7 @@ class Generator
 
         $tmpDir = $this->join(sys_get_temp_dir(), sha1(uniqid()));
         try {
-            $this->fs->copyDirectory($localTemplate, $tmpDir);
+            $this->fs->mirror($localTemplate, $tmpDir);
         } catch (\Exception $e) {
             throw new CheesecakeFilesystemExeption();
         }
@@ -173,15 +174,21 @@ class Generator
         $this->processDirs($tmpDir, $replace);
         $this->processFiles($tmpDir, $replace);
 
-        if (!$this->fs->delete($this->join($tmpDir, 'cheesecake.json'))) {
+        try {
+            $this->fs->remove([$this->join($tmpDir, 'cheesecake.json')]);
+        } catch (IOException $e) {
             throw new CheesecakeFilesystemExeption();
         }
 
-        if (!$this->fs->copyDirectory($tmpDir, $this->output)) {
+        try {
+            $this->fs->mirror($tmpDir, $this->output);
+        } catch(IOException $e) {
             throw new CheesecakeFilesystemExeption();
         }
 
-        if (!$this->fs->deleteDirectory($tmpDir)) {
+        try {
+            $this->fs->remove([$tmpDir]);
+        } catch (IOException $e) {
             throw new CheesecakeFilesystemExeption();
         }
 
@@ -190,9 +197,12 @@ class Generator
         $hookDir = $this->join($this->output, 'hooks');
 
         if (is_dir($hookDir)) {
-            if (!$this->fs->deleteDirectory($hookDir)) {
+            try {
+                $this->fs->remove([$hookDir]);
+            } catch (IOException $e) {
                 throw new CheesecakeFilesystemExeption();
             }
+
         }
 
         return true;
@@ -235,7 +245,9 @@ class Generator
                     continue;
                 }
 
-                if (!$this->fs->move($oldName, $newName)) {
+                try {
+                    $this->fs->rename($oldName, $newName);
+                } catch (IOException $e) {
                     throw new CheesecakeFilesystemExeption();
                 }
             }

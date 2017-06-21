@@ -4,7 +4,7 @@ namespace Cheesecake\Test;
 
 use Cheesecake\Generator;
 use Cheesecake\TestCase;
-use Illuminate\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Filesystem;
 
 class GeneratorTest extends TestCase
 {
@@ -193,6 +193,6 @@ class GeneratorTest extends TestCase
     protected function clean($output)
     {
         $fs = new Filesystem();
-        $fs->deleteDirectory($output);
+        $fs->remove($output);
     }
 }
