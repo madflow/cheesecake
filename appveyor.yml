@@ -1,6 +1,9 @@
 build: false
 shallow_clone: true
-clone_folder: C:\projects\cheesecake
+platform:
+  - x86
+  - x64
+clone_folder: c:\projects\cheesecake
 
 cache:
   - c:\tools\php -> appveyor.yml
@@ -14,7 +17,7 @@ init:
 install:
   - IF EXIST c:\tools\php (SET PHP=0)
   - IF %PHP%==1 cinst -y OpenSSL.Light
-  - IF %PHP%==1 cinst -y php -i
+  - IF %PHP%==1 cinst -y php
   - cd c:\tools\php
   - IF %PHP%==1 copy php.ini-production php.ini /Y
   - IF %PHP%==1 echo date.timezone="UTC" >> php.ini
@@ -22,9 +25,11 @@ install:
   - IF %PHP%==1 echo extension=php_openssl.dll >> php.ini
   - IF %PHP%==1 echo extension=php_mbstring.dll >> php.ini
   - IF %PHP%==1 echo extension=php_fileinfo.dll >> php.ini
-  - cd C:\projects\cheesecake
+  - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
   - appveyor DownloadFile https://getcomposer.org/composer.phar
-  - php composer.phar install --prefer-dist --no-interaction
+  - cd c:\projects\cheesecake
+  - composer install --prefer-dist --no-progress
+
 test_script:
-  - cd C:\projects\cheesecake
-  - vendor\bin\phpunit.bat --colors=always
+  - cd c:\projects\cheesecake
+  - vendor/bin/phpunit tests --colors=always
