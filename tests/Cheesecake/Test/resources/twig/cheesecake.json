@@ -1,4 +1,5 @@
 {
     "app_name": "twig",
-    "filters_ignore": ["upper"]
+    "filters_ignore": ["upper"],
+    "ckey": "hello"
 }

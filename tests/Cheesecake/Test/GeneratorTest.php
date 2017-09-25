@@ -182,6 +182,10 @@ class GeneratorTest extends TestCase
         $o = new Generator($template, [], [Generator::OPT_NO_INTERACTION => true]);
         $o->run();
 
+        $renderedTpl = \file_get_contents($output . '/test.html.twig');
+        
+        $this->assertContains('<script src="{{asset(\'/dist/hello.min.js\') }}></script>', $renderedTpl );
+
         $this->clean($output);
     }
 

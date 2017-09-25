@@ -64,3 +64,9 @@ Put your hooks in ```hooks``` and name them ```pre_gen.php``` or ```post_gen.php
     }
 ```
 + ```filters_ignore``` excepts an array of strings which will be translated to dummy filters.
+
+----
+
++ You can always try to change the delimiter like documented here: https://github.com/bobthecow/mustache.php/wiki/Mustache-Tags#set-delimiter
++ This way it should be possible to circumvent problems with other template engines.
+
