@@ -3,7 +3,7 @@
 namespace Cheesecake\Test;
 
 use Cheesecake\Generator;
-use Cheesecake\TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
 class GeneratorTest extends TestCase
@@ -12,6 +12,7 @@ class GeneratorTest extends TestCase
     {
         $template = __DIR__ .'/resources/minimal-cake';
         $o = new Generator($template);
+        $this->expectNotToPerformAssertions();
     }
 
     public function testRunMinimal()
@@ -69,9 +70,7 @@ class GeneratorTest extends TestCase
             trim(file_get_contents($output.'/README.md'))
         );
 
-        $this->assertTrue(
-            is_dir($output.'/'.'cheesecake')
-        );
+        $this->assertDirectoryExists($output . '/' . 'cheesecake');
 
         $this->assertTrue(
             is_file($output.'/cheesecake/.env')
@@ -85,8 +84,8 @@ class GeneratorTest extends TestCase
             is_file($output.'/cheesecake/config/cheesecake.yml')
         );
 
-        $this->assertTrue(
-            !is_file($output.'/'.'cheesecake.json')
+        $this->assertNotTrue(
+            is_file($output . '/' . 'cheesecake.json')
         );
 
         $this->assertEquals(
@@ -131,7 +130,7 @@ class GeneratorTest extends TestCase
         $this->clean($output);
     }
 
-    public function testRecursiceDirectories()
+    public function testRecursiveDirectories()
     {
         $template = __DIR__ .'/resources/recursive-directories';
         $output = sys_get_temp_dir().'/'.uniqid();
@@ -143,6 +142,7 @@ class GeneratorTest extends TestCase
         $o->run();
 
         $this->clean($output);
+        $this->expectNotToPerformAssertions();
     }
 
     public function testHooks()
@@ -156,9 +156,7 @@ class GeneratorTest extends TestCase
         $o = new Generator($template, [], $options);
         $o->run();
 
-        $this->assertTrue(
-            is_dir($output.'/hello')
-        );
+        $this->assertDirectoryExists($output . '/hello');
         $this->assertTrue(
             is_file($output.'/README.md')
         );
@@ -166,9 +164,7 @@ class GeneratorTest extends TestCase
             trim(file_get_contents($output.'/README.md'))
         );
 
-        $this->assertTrue(
-            !is_dir($output.'/hooks')
-        );
+        $this->assertDirectoryNotExists($output . '/hooks');
 
         $this->clean($output);
     }

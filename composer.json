@@ -9,7 +9,7 @@
         "email": "madflow@domain.invalid"
     }],
     "require": {
-        "php": ">=7.0.0",
+        "php": ">=7.1.0",
         "mustache/mustache": "^2.9",
         "docopt/docopt": "1.0.0",
         "cypresslab/gitelephant": "~3.0",
@@ -20,7 +20,7 @@
         "symfony/finder": "~3.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.0.8"
+        "phpunit/phpunit": "^7.4"
     },
     "autoload": {
         "psr-4": {
