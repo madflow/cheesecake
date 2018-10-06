@@ -9,7 +9,7 @@
         "email": "madflow@domain.invalid"
     }],
     "require": {
-        "php": ">=7.0.0",
+        "php": ">=7.1.0",
         "mustache/mustache": "^2.9",
         "docopt/docopt": "1.0.0",
         "cypresslab/gitelephant": "~3.0",
