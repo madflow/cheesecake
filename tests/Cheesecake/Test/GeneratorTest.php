@@ -189,6 +189,20 @@ class GeneratorTest extends TestCase
         $this->clean($output);
     }
 
+
+    public function testRunGitMinimalNoOutput()
+    {
+        $output = $this->createTemporaryOutput();
+        mkdir($output);
+        chdir($output);
+        $template = __DIR__ .'/resources/git-repo';
+        $o = new Generator($template, [], [Generator::OPT_NO_INTERACTION => true]);
+        $o->run();
+
+        $this->assertMinimalCake($output);
+        $this->clean($output);
+    }
+
     protected function createTemporaryOutput()
     {
         return sys_get_temp_dir().'/'.sha1(uniqid());
