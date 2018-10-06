@@ -14,12 +14,8 @@ addons:
       - parallel
 
 php:
-  - 5.6
-  - 7.0
   - 7.1
   - 7.2
-  - hhvm
-  - hhvm-nightly
 
 matrix:
   fast_finish: true
