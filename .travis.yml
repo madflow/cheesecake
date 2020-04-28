@@ -16,11 +16,7 @@ addons:
 php:
   - 7.1
   - 7.2
-
-matrix:
-  fast_finish: true
-  allow_failures:
-    - php: hhvm-nightly
+  - 7.4
 
 before_script:
     - composer install
