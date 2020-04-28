@@ -10,7 +10,6 @@ use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use GitElephant\Repository;
-use Stringy\StaticStringy as Stringy;
 use cli;
 
 class Generator
@@ -20,8 +19,8 @@ class Generator
     const TEMPLATE_TYPE_REMOTE_GIT = 2;
     const TEMPLATE_TYPE_LOCAL_GIT = 3;
 
-    const OPT_OUTPUT='OUTPUTDIR';
-    const OPT_NO_INTERACTION='--no-interaction';
+    const OPT_OUTPUT = 'OUTPUTDIR';
+    const OPT_NO_INTERACTION = '--no-interaction';
 
     private $template;
     private $templateType;
@@ -55,28 +54,30 @@ class Generator
         $this->mustache = new \Mustache_Engine($options);
         $this->mustache->addHelper('string', [
             'toLowerCase' => function ($value) {
-                return Stringy::toLowerCase($value);
+                return \strtolower($value);
             },
             'toUpperCase' => function ($value) {
-                return Stringy::toUpperCase($value);
+                return \strtoupper($value);
             },
             'upperCaseFirst' => function ($value) {
-                return Stringy::upperCaseFirst($value);
+                return \ucfirst($value);
             },
             'lowerCaseFirst' => function ($value) {
-                return Stringy::lowerCaseFirst($value);
+                return \lcfirst($value);
             },
             'humanize' => function ($value) {
-                return Stringy::humanize($value);
+                $str = \str_replace(['_id', '_'], ['', ' '], $value);
+                return \ucfirst(\trim($str));
             },
             'camelize' => function ($value) {
-                return Stringy::camelize($value);
+                return \lcfirst(\str_replace(' ', '', \ucwords(\preg_replace('/[^a-zA-Z0-9\x7f-\xff]++/', ' ', $value))));
             },
             'upperCamelize' => function ($value) {
-                return Stringy::upperCamelize($value);
+                return \ucfirst(\str_replace(' ', '', \ucwords(\preg_replace('/[^a-zA-Z0-9\x7f-\xff]++/', ' ', $value))));
             },
             'slugify' => function ($value) {
-                return Stringy::slugify($value);
+                $clean = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $value)));
+                return trim($clean, '-');
             },
         ]);
         $this->fs = new Filesystem();
@@ -84,9 +85,7 @@ class Generator
 
     private function getoa(array $options, $name, $default)
     {
-        return (
-            isset($options[$name]) || isset($options['--'.$name])
-        ) ? $options[$name] : $default;
+        return (isset($options[$name]) || isset($options['--' . $name])) ? $options[$name] : $default;
     }
 
     private function detectTemplateType($template)
@@ -99,9 +98,11 @@ class Generator
             }
         }
 
-        if (Stringy::startsWith($template, 'https')
-            || Stringy::startsWith($template, 'git')) {
-                return self::TEMPLATE_TYPE_REMOTE_GIT;
+        if (
+            substr($template, 0, 4) === "https" ||
+            substr($template, 0, 4) === "git"
+        ) {
+            return self::TEMPLATE_TYPE_REMOTE_GIT;
         }
 
         return self::TEMPLATE_TYPE_UNKNOWN;
@@ -119,9 +120,9 @@ class Generator
             $cakeJson = $this->join(realpath($repo->getPath()), 'cheesecake.json');
             $localTemplate = $repo->getPath();
         } elseif ($this->templateType === self::TEMPLATE_TYPE_LOCAL_GIT) {
-              $repo = Repository::open($this->template);
-              $cakeJson = $this->join(realpath($repo->getPath()), 'cheesecake.json');
-              $localTemplate = $repo->getPath();
+            $repo = Repository::open($this->template);
+            $cakeJson = $this->join(realpath($repo->getPath()), 'cheesecake.json');
+            $localTemplate = $repo->getPath();
         } else {
             throw new CheesecakeUnknownTemplateException();
         }
@@ -182,7 +183,7 @@ class Generator
 
         try {
             $this->fs->mirror($tmpDir, $this->output);
-        } catch(IOException $e) {
+        } catch (IOException $e) {
             throw new CheesecakeFilesystemExeption();
         }
 
@@ -202,7 +203,6 @@ class Generator
             } catch (IOException $e) {
                 throw new CheesecakeFilesystemExeption();
             }
-
         }
 
         return true;

@@ -112,10 +112,10 @@ class GeneratorTest extends TestCase
             $json->humanize, 'Hello Good Sir!'
         );
         $this->assertEquals(
-            $json->camelize, 'helloGoodSir!'
+            $json->camelize, 'helloGoodSir'
         );
         $this->assertEquals(
-            $json->upperCamelize, 'HelloGoodSir!'
+            $json->upperCamelize, 'HelloGoodSir'
         );
         $this->assertEquals(
             $json->lowerCaseFirst, 'hello Good Sir!'
