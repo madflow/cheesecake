@@ -41,7 +41,8 @@ class GeneratorTest extends TestCase
         $o = new Generator($template, ['app_name' => 'YO'], $options);
         $o->run();
 
-        $this->assertEquals('# YO',
+        $this->assertEquals(
+            '# YO',
             trim(file_get_contents($output.'/README.md'))
         );
 
@@ -66,7 +67,8 @@ class GeneratorTest extends TestCase
         $this->assertTrue(
             is_file($output.'/README.md')
         );
-        $this->assertEquals('# Cheesecake',
+        $this->assertEquals(
+            '# Cheesecake',
             trim(file_get_contents($output.'/README.md'))
         );
 
@@ -89,7 +91,8 @@ class GeneratorTest extends TestCase
         );
 
         $this->assertEquals(
-            'cheesecake', trim(file_get_contents($output.'/cheesecake/.env'))
+            'cheesecake',
+            trim(file_get_contents($output.'/cheesecake/.env'))
         );
     }
 
@@ -106,25 +109,32 @@ class GeneratorTest extends TestCase
 
         $json = json_decode(file_get_contents($output.'/FILTERS.json'));
         $this->assertEquals(
-            $json->toLowerCase, 'hello good sir!'
+            $json->toLowerCase,
+            'hello good sir!'
         );
         $this->assertEquals(
-            $json->humanize, 'Hello Good Sir!'
+            $json->humanize,
+            'Hello Good Sir!'
         );
         $this->assertEquals(
-            $json->camelize, 'helloGoodSir'
+            $json->camelize,
+            'helloGoodSir'
         );
         $this->assertEquals(
-            $json->upperCamelize, 'HelloGoodSir'
+            $json->upperCamelize,
+            'HelloGoodSir'
         );
         $this->assertEquals(
-            $json->lowerCaseFirst, 'hello Good Sir!'
+            $json->lowerCaseFirst,
+            'hello Good Sir!'
         );
         $this->assertEquals(
-            $json->upperCaseFirst, 'Hello Good Sir!'
+            $json->upperCaseFirst,
+            'Hello Good Sir!'
         );
         $this->assertEquals(
-            $json->slugify, 'hello-good-sir'
+            $json->slugify,
+            'hello-good-sir'
         );
 
         $this->clean($output);
@@ -160,11 +170,12 @@ class GeneratorTest extends TestCase
         $this->assertTrue(
             is_file($output.'/README.md')
         );
-        $this->assertEquals('# Hello',
+        $this->assertEquals(
+            '# Hello',
             trim(file_get_contents($output.'/README.md'))
         );
 
-        $this->assertDirectoryNotExists($output . '/hooks');
+        $this->assertDirectoryDoesNotExist($output . '/hooks');
 
         $this->clean($output);
     }
@@ -179,8 +190,8 @@ class GeneratorTest extends TestCase
         $o->run();
 
         $renderedTpl = \file_get_contents($output . '/test.html.twig');
-        
-        $this->assertContains('<script src="{{asset(\'/dist/hello.min.js\') }}></script>', $renderedTpl );
+
+        $this->assertStringContainsString('<script src="{{asset(\'/dist/hello.min.js\') }}></script>', $renderedTpl);
 
         $this->clean($output);
     }
